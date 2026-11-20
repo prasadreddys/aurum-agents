@@ -1,0 +1,15 @@
+node_modules/
+dist/
+lib/
+cache/
+out/
+broadcast/
+.wrangler/
+.env*
+*.env*
+metadata/
+metadata-orig/
+artwork/
+public/artwork/
+public/metadata/
+.DS_Store
