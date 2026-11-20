@@ -1,0 +1,60 @@
+# AURUM AGENTS — Cloudflare Pages production configuration (Stage 8).
+# Free tier only, $0. No R2, no custom domain, no Workers Functions.
+#
+# HONEST NOTE ON WHAT THIS FILE DOES AND DOES NOT DO
+# --------------------------------------------------
+# This project deploys by DIRECT UPLOAD: the build runs locally
+# (`npm run build` in this directory) and the finished `dist/` folder is
+# uploaded to Cloudflare Pages via the API / `wrangler pages deploy`.
+# Git-connected builds are NOT used, so there is no CI build for this
+# file to trigger.
+#
+# For a direct-upload project, the wrangler schema has NO build-command
+# field and NO production-branch field — those two settings exist only
+# in the dashboard (Settings > Builds) for git-connected projects. They
+# are recorded here as comments only, so the production setup is pinned
+# in one place:
+#   Production branch:  main
+#     (direct uploads target it with `wrangler pages deploy --branch main`)
+#   Build command:      npm run build        (run in repo/frontend/)
+#   Build output dir:   dist                 (see pages_build_output_dir)
+#   Root directory:     repo/frontend/
+#
+# The two fields below ARE real wrangler.toml fields, verified 19 Nov 2026
+# against the official docs
+# (https://developers.cloudflare.com/pages/functions/wrangler-configuration/)
+# and `wrangler@4.164.0 pages deploy --help`:
+#   name                  — the Pages project name.
+#   pages_build_output_dir — the directory wrangler uploads on deploy.
+# No other fields are used; nothing here is invented.
+#
+# Deliberately NOT present:
+#   compatibility_date / compatibility_flags — only meaningful with
+#     Pages Functions; this project has none (static site only).
+#   [vars] — wrangler vars are runtime bindings for Functions code.
+#     This site has no Functions, and Vite env vars (VITE_*) are baked
+#     into the bundle at BUILD time from .env, so [vars] would never
+#     reach the app. Env vars are documented in the comments below and
+#     in .env.example; they are NOT duplicated here as [vars].
+#
+# Production environment variables (Vite — baked in at build time)
+# ------------------------------------------------------------------
+# The .env file used by `npm run build` is the source of truth. Pages
+# dashboard env vars (Settings > Environment variables, or the API)
+# only matter for git-connected builds, which this project does not use.
+# All four are public by design (they ship in the client bundle).
+#
+#   VITE_WC_PROJECT_ID         Reown Cloud project ID (free Starter
+#                              project "AURUM AGENTS"). Value lives in
+#                              .env (gitignored); placeholder in
+#                              .env.example. Public by design.
+#   VITE_CONTRACT_ADDRESS      EMPTY until Stage 9 deploys the contract.
+#                              Never invent an address.
+#   VITE_BSC_RPC_URL           https://bsc-rpc.publicnode.com
+#   VITE_BSC_RPC_FALLBACK_URL  https://bsc-dataseed.bnbchain.org
+#
+# If any of these change, the CSP connect-src in public/_headers must be
+# updated to match the RPC hosts (see the NOTE in that file).
+
+name = "aurumagents"
+pages_build_output_dir = "./dist"
