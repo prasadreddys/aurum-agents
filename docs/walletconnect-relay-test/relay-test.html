@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WalletConnect diagnostic — AURUM AGENTS (preview only)</title>
+<style>
+  body { background: #0a0a0a; color: #f5f0e6; font-family: monospace; padding: 24px; }
+  h1 { color: #d4af37; font-size: 20px; }
+  .box { border: 1px solid #d4af37; border-radius: 12px; padding: 16px; margin: 16px 0; font-size: 18px; line-height: 1.6; }
+  .big { font-size: 28px; font-weight: bold; }
+  button { background: #d4af37; color: #0a0a0a; border: 0; border-radius: 10px; padding: 14px 22px; font-size: 18px; font-weight: bold; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>AURUM AGENTS — WalletConnect diagnostic (preview only)</h1>
+<p>This page only tests whether this browser can reach the WalletConnect relay. It sends no transaction and signs nothing.</p>
+<div class="box">
+  Relay connection: <span id="ws" class="big">Testing…</span><br />
+  <span id="ws-detail"></span>
+</div>
+<div class="box">
+  Stored WalletConnect data (wc@2:* keys): <span id="keys" class="big">…</span><br />
+  <span id="keys-detail"></span>
+</div>
+<div class="box">
+  <button id="clear" type="button">Clear WalletConnect storage</button>
+  <span id="clear-result"></span>
+</div>
+<script src="/relay-test.js"></script>
+</body>
+</html>
