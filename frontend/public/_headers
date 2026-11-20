@@ -1,0 +1,55 @@
+/*
+  NOTE: connect-src MUST list every off-origin host the app calls, or the
+  browser blocks the call. Today that is the two BSC RPC endpoints from
+  src/config/env.ts (primary + fallback), the WalletConnect relay, and
+  the five WalletConnect auxiliary hosts the modal needs to open a
+  session (verify.com AND verify.org — the SDK's attestation server
+  is the .org; echo for pairing events; explorer API; web3modal API).
+  The verify page is ALSO framed by the SDK, so frame-src lists the
+  two verify hosts (without it the browser blocks the frame with
+  "default-src 'self'" — seen in the user's console 19 Nov ~12:00
+  IST). Without them the WalletConnect QR never appears: "Failed to
+  publish custom payload", found 19 Nov 2026. The .org + echo hosts
+  were missing and showed as CSP violations in the user's console
+  (19 Nov ~11:57 IST, 6 blocked connects). If a VITE_BSC_RPC_URL
+  host changes, update connect-src to match — otherwise reads (e.g.
+  the BNB balance) silently show "—" while curl works fine.
+  (Found 18 Nov 2026: connect-src 'self' was blocking the balance read.)
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://bsc-rpc.publicnode.com https://bsc-dataseed.bnbchain.org wss://relay.walletconnect.com https://relay.walletconnect.com https://verify.walletconnect.com https://verify.walletconnect.org https://echo.walletconnect.com https://explorer-api.walletconnect.com https://api.web3modal.org; frame-src https://verify.walletconnect.org https://verify.walletconnect.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+*/
+
+# ---------------------------------------------------------------------------
+# Caching (Stage 8) — syntax verified against
+# https://developers.cloudflare.com/pages/configuration/headers/
+# Path patterns use a single splat (*). A request matching multiple rules
+# inherits ALL of them, so /artwork/* and /metadata/* responses still get
+# every security header from the /* block above, plus the Cache-Control
+# below. No detach (!) is needed: Cache-Control is not set by /*.
+#
+# CSP note: NO CSP change is needed for artwork/metadata. They are served
+# from this same Pages project (same origin), so 'self' already covers
+# fetch() and <img> for them. If the metadata base URI ever moves to an
+# off-origin host, THAT host must be added to connect-src (and img-src
+# if its images are rendered) — see the NOTE in the /* block above.
+# ---------------------------------------------------------------------------
+
+# Artwork + metadata are content-addressed by token ID and never change
+# (a token's image/metadata are fixed at mint), so they are cached
+# immutably for a year. (Cloudflare's own docs use max-age=31556952 for
+# this pattern; 31536000 = 365 days is the value pinned by Stage 8.)
+/artwork/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/metadata/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The app shell must always revalidate so a new deploy is picked up
+# immediately instead of serving a stale index.html.
+/index.html
+  Cache-Control: no-cache
+
